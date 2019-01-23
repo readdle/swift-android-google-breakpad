@@ -1,5 +1,5 @@
 module Breakpad [system] {
-  header "build/jni/include/breakpad.h"
+  header "breakpad.h"
   link "breakpad"
   export *
 }
