@@ -2,11 +2,16 @@
 #ifndef BREAKPAD_H
 #define BREAKPAD_H
 
+#import <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void setUpBreakpad(const char* );
+typedef bool (*SwiftMinidumpCallback)(const char *dump_path, bool succeeded);
+
+void setUpBreakpad(const char* path);
+void setUpBreakpadWithCallback(const char* path, SwiftMinidumpCallback callback);
 
 #ifdef __cplusplus
 }
