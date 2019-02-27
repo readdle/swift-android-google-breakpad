@@ -1,5 +1,2 @@
-.gclient
-.gclient_entries
-build-android-swift/armeabi-v7a
 build-android-swift/libs
 build-android-swift/obj
