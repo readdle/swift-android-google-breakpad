@@ -1,4 +1,4 @@
-#include "breakpad.h"
+#include "../breakpad.h"
 #include "client/linux/handler/exception_handler.h"
 #include "client/linux/handler/minidump_descriptor.h"
 
