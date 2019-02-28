@@ -27,28 +27,28 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Ignore other VCSs.
-.repo/
-.svn/
+/src/.repo/
+/src/.svn/
 
 # Ignore common compiled artifacts.
 *~
 *.dwo
 *.o
 lib*.a
-/breakpad.pc
-/breakpad-client.pc
-/src/client/linux/linux_client_unittest_shlib
-/src/client/linux/linux_dumper_unittest_helper
-/src/processor/microdump_stackwalk
-/src/processor/minidump_dump
-/src/processor/minidump_stackwalk
-/src/tools/linux/core2md/core2md
-/src/tools/linux/dump_syms/dump_syms
-/src/tools/linux/md2core/minidump-2-core
-/src/tools/linux/symupload/minidump_upload
-/src/tools/linux/symupload/sym_upload
-/src/tools/mac/dump_syms/dump_syms
-/src/tools/mac/dump_syms/dump_syms_mac
+/src/breakpad.pc
+/src/breakpad-client.pc
+/src/src/client/linux/linux_client_unittest_shlib
+/src/src/client/linux/linux_dumper_unittest_helper
+/src/src/processor/microdump_stackwalk
+/src/src/processor/minidump_dump
+/src/src/processor/minidump_stackwalk
+/src/src/tools/linux/core2md/core2md
+/src/src/tools/linux/dump_syms/dump_syms
+/src/src/tools/linux/md2core/minidump-2-core
+/src/src/tools/linux/symupload/minidump_upload
+/src/src/tools/linux/symupload/sym_upload
+/src/src/tools/mac/dump_syms/dump_syms
+/src/src/tools/mac/dump_syms/dump_syms_mac
 
 # Ignore unit test artifacts.
 *_unittest
@@ -56,15 +56,15 @@ lib*.a
 *.trs
 
 # Ignore autotools generated artifacts.
-.deps
-.dirstamp
-autom4te.cache/
-/config.cache
-config.h
-/config.log
-/config.status
-/Makefile
-stamp-h1
+/src/.deps
+/src/.dirstamp
+/srcautom4te.cache/
+/src/config.cache
+/srcconfig.h
+/src/config.log
+/src/config.status
+/src/Makefile
+/srcstamp-h1
 
 # Ignore GYP generated Visual Studio artifacts.
 *.filters
@@ -81,9 +81,3 @@ src/Makefile
 
 # Ignore compiled Python files.
 *.pyc
-
-# Ignore directories gclient syncs.
-src/testing
-src/third_party/lss
-src/third_party/protobuf
-src/tools/gyp
