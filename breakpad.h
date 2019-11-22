@@ -8,10 +8,11 @@
 extern "C" {
 #endif
 
-typedef bool (*SwiftMinidumpCallback)(const char *dump_path, bool succeeded);
+typedef void (*BreakPadCallback)();
 
 void setUpBreakpad(const char* path);
-void setUpBreakpadWithCallback(const char* path, SwiftMinidumpCallback callback);
+void setUpBreakpadWithCallback(const char* path, const char* errorMessagePath, BreakPadCallback callback);
+void setBreakpadFatalErrorMessage(const char* message);
 
 #ifdef __cplusplus
 }
