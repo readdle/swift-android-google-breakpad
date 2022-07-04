@@ -5,23 +5,45 @@
 #include <android/log.h>
 #include <sys/stat.h>
 
-#define  LOG_TAG   "Breakpad"
+#include <jni.h>
+#include <string>
+#include <malloc.h>
+#include <dlfcn.h>
+
+#define LOG_TAG                             "Breakpad"
+#define CRASHREPORTER_ANNOTATIONS_VERSION   5
+#define CRASHREPORTER_ANNOTATIONS_SECTION   "__crash_info"
+
+struct crashreporter_annotations_t {
+    uint64_t version;          // unsigned long
+    uint64_t message;          // char *
+    uint64_t signature_string; // char *
+    uint64_t backtrace;        // char *
+    uint64_t message2;         // char *
+    uint64_t thread;           // uint64_t
+    uint64_t dialog_mode;      // unsigned int
+    uint64_t abort_cause;      // unsigned int
+};
+
+const crashreporter_annotations_t *gCRAnnotations = NULL;
+
+static inline const char *CRGetCrashLogMessage() {
+    if (gCRAnnotations != NULL) {
+        return reinterpret_cast<const char *>(gCRAnnotations->message);      
+    }
+    return NULL;
+}
 
 static google_breakpad::ExceptionHandler* exceptionHandler = NULL;
-static BreakPadCallback swiftCallback = NULL;
 
 static char* fatalErrorMessagesPath = NULL;
-static char* fatalErrorMessage = NULL;
 
 bool DumpCallback(const google_breakpad::MinidumpDescriptor& descriptor,
                   void* context,
                   bool succeeded) {
   	__android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Dump path: %s\n", descriptor.path());
 
-  	if (swiftCallback != NULL) {
-  	    swiftCallback();
-  	}
-
+    const char* fatalErrorMessage = CRGetCrashLogMessage();
   	if (fatalErrorMessage != NULL) {
         __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Fatal error message: %s\n", fatalErrorMessage);
 
@@ -51,22 +73,24 @@ bool DumpCallback(const google_breakpad::MinidumpDescriptor& descriptor,
   	return succeeded;
 }
 
-void setUpBreakpad(const char *path) {
-   	__android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Configuring breakpad...");
+void setUpBreakpad(const char* path, const char* errorMessagePath) {
+    __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Configuring breakpad...");
     __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "path is %s", path);
-    google_breakpad::MinidumpDescriptor descriptor(path);
-    exceptionHandler = new google_breakpad::ExceptionHandler(descriptor, NULL, DumpCallback, NULL, true, -1);
-    __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Breakpad is configured!");
-}
-
-void setUpBreakpadWithCallback(const char* path, const char* errorMessagePath, BreakPadCallback callback) {
     fatalErrorMessagesPath = (char*) malloc((strlen(errorMessagePath) + 1) * sizeof(char));
     strcpy(fatalErrorMessagesPath, errorMessagePath);
-	swiftCallback = callback;
-	setUpBreakpad(path);
-}
 
-void setBreakpadFatalErrorMessage(const char* message) {
-	fatalErrorMessage = (char*) malloc((strlen(message) + 1) * sizeof(char));
-	strcpy(fatalErrorMessage, message);
+    google_breakpad::MinidumpDescriptor descriptor(path);
+    exceptionHandler = new google_breakpad::ExceptionHandler(descriptor, NULL, DumpCallback, NULL, true, -1);
+
+    /* find the address of gCRAnnotations struct*/
+    auto* ptr = dlsym(RTLD_DEFAULT, "gCRAnnotations");
+    if (ptr != NULL) {
+        gCRAnnotations = reinterpret_cast<const crashreporter_annotations_t *>(ptr);
+        __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "gCRAnnotations saved sucessfully \n");        
+    }
+    else {
+        __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Can't find gCRAnnotations! \n");           
+    }
+
+    __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Breakpad is configured!");
 }

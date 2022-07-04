@@ -8,11 +8,7 @@
 extern "C" {
 #endif
 
-typedef void (*BreakPadCallback)();
-
-void setUpBreakpad(const char* path);
-void setUpBreakpadWithCallback(const char* path, const char* errorMessagePath, BreakPadCallback callback);
-void setBreakpadFatalErrorMessage(const char* message);
+void setUpBreakpad(const char* path, const char* errorMessagePath);
 
 #ifdef __cplusplus
 }
