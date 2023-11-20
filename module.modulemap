@@ -1,5 +1,0 @@
-module Breakpad [system] {
-  header "breakpad.h"
-  link "breakpad"
-  export *
-}

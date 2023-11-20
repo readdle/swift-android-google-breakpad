@@ -1,2 +1,3 @@
 build-android-swift/libs
 build-android-swift/obj
+fetch_breakpad
