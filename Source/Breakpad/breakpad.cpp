@@ -25,18 +25,16 @@ struct crashreporter_annotations_t {
     uint64_t abort_cause;      // unsigned int
 };
 
-const crashreporter_annotations_t *gCRAnnotations = NULL;
+static const crashreporter_annotations_t *crashReporterAnnotations = NULL;
+static google_breakpad::ExceptionHandler* exceptionHandler = NULL;
+static char* fatalErrorMessagesPath = NULL;
 
 static inline const char *CRGetCrashLogMessage() {
-    if (gCRAnnotations != NULL) {
-        return reinterpret_cast<const char *>(gCRAnnotations->message);      
+    if (crashReporterAnnotations != NULL) {
+        return reinterpret_cast<const char *>(crashReporterAnnotations->message);
     }
     return NULL;
 }
-
-static google_breakpad::ExceptionHandler* exceptionHandler = NULL;
-
-static char* fatalErrorMessagesPath = NULL;
 
 bool DumpCallback(const google_breakpad::MinidumpDescriptor& descriptor,
                   void* context,
@@ -85,12 +83,13 @@ void setUpBreakpad(const char* path, const char* errorMessagePath) {
     /* find the address of gCRAnnotations struct*/
     auto* ptr = dlsym(RTLD_DEFAULT, "gCRAnnotations");
     if (ptr != NULL) {
-        gCRAnnotations = reinterpret_cast<const crashreporter_annotations_t *>(ptr);
-        __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "gCRAnnotations saved sucessfully \n");        
+        crashReporterAnnotations = reinterpret_cast<const crashreporter_annotations_t *>(ptr);
+        __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "gCRAnnotations saved successfully \n");
     }
     else {
         __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Can't find gCRAnnotations! \n");           
     }
+
 
     __android_log_print(ANDROID_LOG_INFO, LOG_TAG, "Breakpad is configured!");
 }
